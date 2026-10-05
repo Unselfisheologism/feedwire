@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Feedwire submission v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "summary"],
+  "properties": {
+    "type": { "enum": ["bug", "missing_feature", "confusing_error", "docs", "performance", "other"] },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "details": { "type": "string", "maxLength": 4000 },
+    "severity": { "enum": ["low", "medium", "high"], "default": "low" },
+    "expected": { "type": "string", "maxLength": 1000 },
+    "actual": { "type": "string", "maxLength": 1000 },
+    "suggestion": { "type": "string", "maxLength": 2000 },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] },
+        "path": { "type": "string", "maxLength": 300 },
+        "status_code": { "type": "integer", "minimum": 100, "maximum": 599 },
+        "error_message": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "version": { "type": "string", "maxLength": 50 }
+      }
+    }
+  }
+}
