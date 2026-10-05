@@ -2,7 +2,7 @@ import json
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from superfeedback import create_feedback_router
+from feedwire import create_feedback_router
 
 ADMIN = {"Authorization": "Bearer secret-token"}
 GOOD = {"type": "bug", "summary": "POST /users 500 on null last_name", "details": "x", "severity": "high",
