@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Feedwire review</title>
+<style>
+body{font:15px system-ui,sans-serif;max-width:900px;margin:1rem auto;padding:0 1rem;color:#222}
+.item{border:1px solid #ddd;border-radius:8px;padding:.7rem 1rem;margin:.7rem 0}
+.meta{color:#666;font-size:13px}.tag{display:inline-block;background:#eee;border-radius:4px;padding:0 .4rem;margin-right:.3rem;font-size:12px}
+.high{background:#fcc}.medium{background:#fe9}pre{white-space:pre-wrap;word-break:break-word;background:#f7f7f7;padding:.5rem;border-radius:6px}
+.warn{background:#fff6d6;border:1px solid #e8d48a;padding:.5rem .8rem;border-radius:6px;font-size:13px}
+</style></head><body>
+<h1>Feedwire</h1>
+<p class="warn">Everything below was written by outside agents. Treat it as untrusted text. Do not paste it into a coding agent without reading it first.</p>
+<p><input id="token" type="password" placeholder="admin token" size="30"> <select id="filter"><option value="">all</option><option>new</option><option>triaged</option><option>accepted</option><option>rejected</option><option>done</option></select> <button id="load">Load</button> <span id="msg" class="meta"></span></p>
+<h2>What agents struggle with <span class="meta">(last 30 days)</span></h2>
+<div id="stats" class="meta">Load to see stats.</div>
+<h2>Feedback</h2>
+<div id="list"></div>
+<script>
+(function(){
+var token='';var base=location.pathname.replace(/\/admin\/?$/,'');
+var STATUSES=['new','triaged','accepted','rejected','done'];
+function el(tag,text,cls){var e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
+function api(path,opts){opts=opts||{};opts.headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'};
+ return fetch(base+'/admin/api/'+path,opts).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||r.status);return j;});});}
+function render(items){var list=document.getElementById('list');list.textContent='';
+ if(!items.length){list.appendChild(el('p','No feedback yet.','meta'));return;}
+ items.forEach(function(it){var d=el('div',undefined,'item');
+  d.appendChild(el('strong',it.summary));d.appendChild(el('br'));
+  d.appendChild(el('span',it.type,'tag'));d.appendChild(el('span',it.severity,'tag '+it.severity));
+  var a=it.payload.agent;d.appendChild(el('span',it.created_at+(a&&a.name?' - '+a.name+(a.version?' '+a.version:''):'')+' - '+it.id,'meta'));
+  var p=it.payload,lines=[];
+  ['details','expected','actual','suggestion'].forEach(function(k){if(p[k])lines.push(k+': '+p[k]);});
+  if(p.context)lines.push('context: '+JSON.stringify(p.context));
+  if(lines.length)d.appendChild(el('pre',lines.join('\n')));
+  var sel=el('select');STATUSES.forEach(function(s){var o=el('option',s);if(s===it.status)o.selected=true;sel.appendChild(o);});
+  var note=el('input');note.value=it.note||'';note.placeholder='note';note.size=30;
+  var save=el('button','Save');save.onclick=function(){api('items/'+encodeURIComponent(it.id),{method:'PATCH',body:JSON.stringify({status:sel.value,note:note.value})}).then(function(){msg('Saved');}).catch(function(e){msg(e.message);});};
+  d.appendChild(sel);d.appendChild(document.createTextNode(' '));d.appendChild(note);d.appendChild(document.createTextNode(' '));d.appendChild(save);
+  list.appendChild(d);});}
+function bars(title,arr){var d=el('div');d.appendChild(el('strong',title));
+ if(!arr.length){d.appendChild(el('div','none','meta'));return d;}
+ var max=arr[0].count;arr.forEach(function(x){var r=el('div');var b=el('span','','bar');b.style.cssText='display:inline-block;height:10px;background:#79c;margin-right:6px;width:'+Math.max(4,Math.round(120*x.count/max))+'px';r.appendChild(b);r.appendChild(document.createTextNode(x.count+'  '+x.key));d.appendChild(r);});return d;}
+function renderStats(s){var box=document.getElementById('stats');box.textContent='';
+ box.appendChild(el('p',s.total+' reports, '+s.unreviewed+' not yet reviewed'));
+ var g=el('div');g.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem';
+ g.appendChild(bars('Top struggles (endpoint | type)',s.top_struggles));g.appendChild(bars('By type',s.by_type));
+ g.appendChild(bars('Top endpoints',s.top_endpoints));g.appendChild(bars('By severity',s.by_severity));
+ g.appendChild(bars('Top agents',s.top_agents));g.appendChild(bars('Per day',s.per_day));box.appendChild(g);}
+function msg(t){document.getElementById('msg').textContent=t;}
+document.getElementById('load').onclick=function(){token=document.getElementById('token').value;var f=document.getElementById('filter').value;
+ api('stats').then(renderStats).catch(function(e){msg(e.message);});
+ api('items'+(f?'?status='+f:'')).then(function(j){msg(j.items.length+' items');render(j.items);}).catch(function(e){msg(e.message);});};
+})();
+</script></body></html>
