@@ -5,6 +5,7 @@
   "main": "index.js",
   "files": [
     "index.js",
+    "core.js",
     "dashboard.html",
     "feedback.schema.json"
   ],
