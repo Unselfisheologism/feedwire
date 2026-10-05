@@ -83,3 +83,20 @@ test('worker: admin disabled without secret, oversize body, rate limit', async (
   for (let i = 0; i < 32; i++) last = await post(w, env, good);
   assert.equal(last.status, 429);
 });
+
+test('worker: diag reports secret presence without values; token is trimmed', async () => {
+  const w = await loadWorker();
+  const env = { DB: fakeD1(), FEEDBACK_ADMIN_TOKEN: 'sekrit123 \n', OTHER_TOKEN: 'zzz', PLAIN: 'x' };
+  const d = await call(w, env, '/feedback/admin/diag');
+  assert.equal(d.status, 200);
+  const text = await d.text();
+  assert.ok(!text.includes('sekrit123') && !text.includes('zzz'));
+  const j = JSON.parse(text);
+  assert.equal(j.secret_set, true);
+  assert.equal(j.secret_length, 'sekrit123 \n'.length);
+  assert.deepEqual(j.env_keys_with_token_in_name.sort(), ['FEEDBACK_ADMIN_TOKEN', 'OTHER_TOKEN']);
+  const ok = await call(w, env, '/feedback/admin/api/items', { headers: { authorization: 'Bearer  sekrit123 ' } });
+  assert.equal(ok.status, 200);
+  const none = await (await call(w, { DB: fakeD1() }, '/feedback/admin/diag')).json();
+  assert.deepEqual(none, { secret_set: false, secret_length: 0, env_keys_with_token_in_name: [] });
+});
