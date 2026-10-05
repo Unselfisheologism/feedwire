@@ -1,5 +1,5 @@
 [project]
-name = "superfeeck"
+name = "feedwire"
 version = "0.1.0"
 description = "A /feedback endpoint for your API so AI agents can report bugs and missing features. FastAPI router."
 requires-python = ">=3.9"
@@ -14,10 +14,10 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["superfeedback"]
+packages = ["feedwire"]
 
 [tool.setuptools.package-data]
-superfeedback = ["dashboard.html", "feedback.schema.json"]
+feedwire = ["dashboard.html", "feedback.schema.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
