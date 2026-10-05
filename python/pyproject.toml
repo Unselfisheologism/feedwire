@@ -1,5 +1,5 @@
 [project]
-name = "superfeedback"
+name = "superfeeck"
 version = "0.1.0"
 description = "A /feedback endpoint for your API so AI agents can report bugs and missing features. FastAPI router."
 requires-python = ">=3.9"
