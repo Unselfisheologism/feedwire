@@ -47,7 +47,7 @@ function renderStats(s){var box=document.getElementById('stats');box.textContent
  g.appendChild(bars('Top endpoints',s.top_endpoints));g.appendChild(bars('By severity',s.by_severity));
  g.appendChild(bars('Top agents',s.top_agents));g.appendChild(bars('Per day',s.per_day));box.appendChild(g);}
 function msg(t){document.getElementById('msg').textContent=t;}
-document.getElementById('load').onclick=function(){token=document.getElementById('token').value;var f=document.getElementById('filter').value;
+document.getElementById('load').onclick=function(){token=document.getElementById('token').value.trim();var f=document.getElementById('filter').value;
  api('stats').then(renderStats).catch(function(e){msg(e.message);});
  api('items'+(f?'?status='+f:'')).then(function(j){msg(j.items.length+' items');render(j.items);}).catch(function(e){msg(e.message);});};
 })();
