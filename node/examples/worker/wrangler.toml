@@ -1,0 +1,18 @@
+name = "superfeedback"
+main = "worker.mjs"
+compatibility_date = "2024-11-01"
+
+# Text imports for the dashboard HTML (JSON imports work out of the box).
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
+
+# Replace database_id with the id printed by: npx wrangler d1 create superfeedback
+[[d1_databases]]
+binding = "DB"
+database_name = "superfeedback"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# The admin token is NOT stored here. Set it as a secret:
+#   npx wrangler secret put FEEDBACK_ADMIN_TOKEN
