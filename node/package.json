@@ -1,11 +1,21 @@
 {
-  "name": "superfeedback",
+  "name": "superfeeck",
   "version": "0.1.0",
   "description": "A /feedback endpoint for your API so AI agents can report bugs and missing features. Express middleware.",
   "main": "index.js",
-  "files": ["index.js", "dashboard.html", "feedback.schema.json"],
-  "engines": { "node": ">=22.5" },
-  "scripts": { "test": "node --test --no-warnings test/*.test.js" },
+  "files": [
+    "index.js",
+    "dashboard.html",
+    "feedback.schema.json"
+  ],
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "test": "node --test --no-warnings test/*.test.js"
+  },
   "license": "MIT",
-  "devDependencies": { "express": "^4.21.2" }
+  "devDependencies": {
+    "express": "^4.21.2"
+  }
 }
