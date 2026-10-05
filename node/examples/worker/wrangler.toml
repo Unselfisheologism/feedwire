@@ -8,11 +8,12 @@ type = "Text"
 globs = ["**/*.html"]
 fallthrough = true
 
-# Replace database_id with the id printed by: npx wrangler d1 create superfeedback
+# D1 database. No database_id on purpose: when Cloudflare deploys from Git,
+# it creates the database for you (automatic provisioning) and binds it as DB.
+# With the CLI you can still pin one by adding: database_id = "<id from wrangler d1 create>"
 [[d1_databases]]
 binding = "DB"
 database_name = "superfeedback"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 
-# The admin token is NOT stored here. Set it as a secret:
-#   npx wrangler secret put FEEDBACK_ADMIN_TOKEN
+# The admin token is NOT stored here. Set it as a secret named FEEDBACK_ADMIN_TOKEN
+# (dashboard: Worker > Settings > Variables and Secrets, or: npx wrangler secret put FEEDBACK_ADMIN_TOKEN)
