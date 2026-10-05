@@ -1,4 +1,4 @@
-# Superfeeck
+# Feedwire
 
 A `/feedback` endpoint you add to your backend in a few lines, so AI agents that hit a bug or a missing feature can say so in a structured way. A human reviews what comes in.
 
@@ -52,7 +52,7 @@ FEEDBACK_ADMIN_TOKEN=pick-a-long-random-string uvicorn examples.app:app --port 3
 In your own app:
 
 ```python
-from superfeedback import create_feedback_router
+from feedwire import create_feedback_router
 app.include_router(create_feedback_router(db_path="feedback.db", admin_token=os.environ["FEEDBACK_ADMIN_TOKEN"]))
 ```
 
