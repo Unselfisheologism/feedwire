@@ -1,5 +1,5 @@
 'use strict';
-// SuperFeedback middleware for Express (or any connect-style server).
+// Feedwire middleware for Express (or any connect-style server).
 // Storage: node:sqlite (built into Node >= 22.5). No runtime dependencies.
 const { DatabaseSync } = require('node:sqlite');
 const crypto = require('node:crypto');
@@ -99,7 +99,7 @@ function feedback(opts = {}) {
     return !!m && safeEqual(m[1], opts.adminToken);
   };
 
-  return async function superfeedback(req, res, next) {
+  return async function feedwire(req, res, next) {
     try {
       const url = new URL(req.originalUrl || req.url, 'http://x');
       const p = url.pathname.replace(/\/+$/, '') || '/';
