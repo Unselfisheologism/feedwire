@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SuperFeedback submission v1",
+  "title": "Feedwire submission v1",
   "type": "object",
   "additionalProperties": false,
   "required": ["type", "summary"],
