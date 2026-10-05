@@ -44,9 +44,10 @@ async function safeEqual(a, b) {
 }
 
 async function adminOk(request, env) {
-  if (!env.FEEDBACK_ADMIN_TOKEN) return false;
-  const m = /^Bearer (.+)$/.exec(request.headers.get('authorization') || '');
-  return !!m && (await safeEqual(m[1], env.FEEDBACK_ADMIN_TOKEN));
+  const secret = typeof env.FEEDBACK_ADMIN_TOKEN === 'string' ? env.FEEDBACK_ADMIN_TOKEN.trim() : '';
+  if (!secret) return false;
+  const m = /^Bearer\s+(.+)$/i.exec((request.headers.get('authorization') || '').trim());
+  return !!m && (await safeEqual(m[1].trim(), secret));
 }
 
 const row = (r) => ({
@@ -115,6 +116,16 @@ async function handle(request, env) {
     await env.DB.prepare('INSERT INTO feedback (id, created_at, status, type, severity, summary, payload) VALUES (?,?,?,?,?,?,?)')
       .bind(id, new Date().toISOString(), 'new', value.type, value.severity, value.summary, JSON.stringify(value)).run();
     return send(201, { id, status: 'received' });
+  }
+
+  if (sub === '/admin/diag') {
+    if (method !== 'GET') return send(405, { error: 'method not allowed' }, { Allow: 'GET' });
+    const v = env.FEEDBACK_ADMIN_TOKEN;
+    return send(200, {
+      secret_set: typeof v === 'string' && v.length > 0,
+      secret_length: typeof v === 'string' ? v.length : 0,
+      env_keys_with_token_in_name: Object.keys(env).filter((k) => /token/i.test(k)),
+    });
   }
 
   if (sub === '/admin' && method === 'GET') {
