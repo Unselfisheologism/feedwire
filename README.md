@@ -1,4 +1,4 @@
-# SuperFeedback
+# Superfeeck
 
 A `/feedback` endpoint you add to your backend in a few lines, so AI agents that hit a bug or a missing feature can say so in a structured way. A human reviews what comes in.
 
