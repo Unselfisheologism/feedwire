@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-from superfeedback import create_feedback_router
+from feedwire import create_feedback_router
 
 app = FastAPI()
 app.include_router(create_feedback_router(
