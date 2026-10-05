@@ -50,7 +50,7 @@ test('worker: discovery, schema, dashboard', async () => {
   assert.equal((await (await call(w, env, '/feedback/schema')).json()).additionalProperties, false);
   const d = await call(w, env, '/feedback/admin');
   assert.equal(d.status, 200);
-  assert.match(await d.text(), /SuperFeedback/);
+  assert.match(await d.text(), /Feedwire/);
 });
 
 test('worker: submit, validate, review, stats', async () => {
