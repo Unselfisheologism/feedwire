@@ -1,4 +1,4 @@
-// SuperFeedback hosted example as a Cloudflare Worker + D1.
+// Feedwire hosted example as a Cloudflare Worker + D1.
 // Same routes, schema and validation as the Express middleware (shared via ../../core.js).
 import core from '../../core.js';
 import SCHEMA from '../../feedback.schema.json';
