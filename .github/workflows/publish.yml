@@ -52,6 +52,9 @@ jobs:
   npm:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -59,32 +62,24 @@ jobs:
           path: artifacts
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: Install OIDC-capable npm CLI
+        run: npm install --global npm@11 && npm --version
       - name: Publish npm package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_API_TOKEN }}
-        run: |
-          test -n "$NODE_AUTH_TOKEN" || { echo 'NPM_API_TOKEN secret is missing'; exit 1; }
-          npm publish artifacts/npm/feedwire-*.tgz --access public
+        run: npm publish artifacts/npm/feedwire-*.tgz --access public
 
   pypi:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: feedwire-distributions
           path: artifacts
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: python -m pip install twine
       - name: Publish Python package
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-          TWINE_NON_INTERACTIVE: '1'
-        run: |
-          test -n "$TWINE_PASSWORD" || { echo 'PYPI_API_TOKEN secret is missing'; exit 1; }
-          python -m twine upload artifacts/pypi/*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: artifacts/pypi/
