@@ -4,3 +4,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
+
+# Package build outputs
+build/
+dist/
+artifacts/
+*.tgz
+.venv/
