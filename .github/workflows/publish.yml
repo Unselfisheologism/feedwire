@@ -1,0 +1,90 @@
+name: Publish packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ !github.event.release.prerelease && !github.event.release.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check tag, versions, assets and tests
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          python scripts/check-release.py
+          sh scripts/check-sync.sh
+          npm ci --prefix node
+          npm test --prefix node
+          python -m pip install -e 'python[test]' build twine
+          python -m pytest python/tests -q
+      - name: Build and check both distributions
+        run: |
+          mkdir -p artifacts/npm artifacts/pypi
+          cd node
+          npm pack --pack-destination ../artifacts/npm
+          cd ..
+          python -m build python --outdir artifacts/pypi
+          python -m twine check artifacts/pypi/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feedwire-distributions
+          path: artifacts/
+          retention-days: 7
+
+  npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: feedwire-distributions
+          path: artifacts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Publish npm package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_API_TOKEN }}
+        run: |
+          test -n "$NODE_AUTH_TOKEN" || { echo 'NPM_API_TOKEN secret is missing'; exit 1; }
+          npm publish artifacts/npm/feedwire-*.tgz --access public
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: feedwire-distributions
+          path: artifacts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install twine
+      - name: Publish Python package
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_NON_INTERACTIVE: '1'
+        run: |
+          test -n "$TWINE_PASSWORD" || { echo 'PYPI_API_TOKEN secret is missing'; exit 1; }
+          python -m twine upload artifacts/pypi/*
