@@ -3,14 +3,28 @@ name = "feedwire"
 version = "0.1.0"
 description = "A /feedback endpoint for your API so AI agents can report bugs and missing features. FastAPI router."
 requires-python = ">=3.9"
-dependencies = ["fastapi"]
-license = { text = "MIT" }
+dependencies = ["fastapi>=0.100"]
+readme = "README.md"
+keywords = ["feedback", "ai", "agents", "fastapi", "api"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Framework :: FastAPI",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/Unselfisheologism/feedwire"
+Repository = "https://github.com/Unselfisheologism/feedwire"
+Issues = "https://github.com/Unselfisheologism/feedwire/issues"
 
 [project.optional-dependencies]
 test = ["pytest", "httpx"]
 
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
