@@ -1,5 +1,7 @@
 name: ci
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   node:
     runs-on: ubuntu-latest
@@ -8,11 +10,13 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: sh scripts/check-sync.sh
-      - run: cd node && npm install && npm test
+      - run: cd node && npm ci && npm test && npm pack --dry-run
   python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - run: cd python && pip install -e ".[test]" && pytest -q
+        with: { python-version: '3.11' }
+      - run: python scripts/check-release.py
+      - run: pip install -e 'python[test]' build twine && pytest python/tests -q
+      - run: python -m build python && python -m twine check python/dist/*
