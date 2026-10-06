@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Give AI agents a /feedback endpoint. Feedwire collects structured bug reports and missing features from agents using your API, for a human to review.">
+<title>Feedwire - Give your API a feedback loop</title>
+<style>
+:root{color-scheme:light dark;--bg:#faf9f5;--ink:#202d2a;--muted:#586760;--rule:#d9dfd8;--panel:#f0f2eb;--accent:#25674f;--code:#182724;--codeink:#e5f0e6}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
+a{color:inherit;text-underline-offset:4px}
+a:hover{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:5px}
+main,header,footer{max-width:1120px;margin:auto;padding-inline:24px}
+header{display:flex;align-items:center;justify-content:space-between;padding-block:24px;border-bottom:1px solid var(--rule);gap:16px}
+.brand{font-size:21px;font-weight:750;text-decoration:none;letter-spacing:-1px}
+.brand span{color:var(--accent);margin-right:7px}
+nav{font-size:14px}
+nav a{text-decoration:none;padding:10px 0 10px 16px}
+.hero{padding-block:65px 46px;display:grid;gap:36px}
+.eyebrow{color:var(--accent);font-size:12px;letter-spacing:1.7px;font-weight:650;text-transform:uppercase;margin:0 0 20px}
+h1{font-size:clamp(43px,5vw,60px);letter-spacing:-.055em;line-height:1.06;margin:0;max-width:750px;font-weight:650}
+h1 span{color:var(--accent)}
+.lead{font-size:19px;max-width:600px;color:var(--muted);margin:23px 0 27px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.button{display:inline-flex;justify-content:center;align-items:center;min-height:46px;padding:10px 20px;border:1px solid var(--rule);border-radius:5px;text-decoration:none;font-size:14px;font-weight:600}
+.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.primary:hover{color:var(--bg);filter:brightness(1.12)}
+.loop{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:24px}
+.loop-top{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--rule);padding-bottom:16px;font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}
+.signal{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;padding:28px 0;font-size:14px}
+.node{border:1px solid var(--rule);padding:14px 8px;text-align:center;border-radius:4px;background:var(--bg)}
+.arrow{color:var(--accent)}
+.endpoint{font:20px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--accent);margin:0 0 12px}
+.loop figcaption{font-size:14px;color:var(--muted);max-width:420px}
+.problem{padding:28px 0 44px;max-width:750px;font-size:20px;line-height:1.5;letter-spacing:-.025em}
+.problem p{margin:0}
+.problem .muted{color:var(--muted)}
+section{padding-block:44px;border-top:1px solid var(--rule)}
+h2{font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-.04em;margin:0 0 14px}
+.section-intro{color:var(--muted);max-width:650px;margin:0 0 28px;font-size:16px}
+.setup{display:grid;gap:20px}
+.code-card{min-width:0;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.code-header{padding:14px 18px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.code-header h3{margin:0;font-size:16px;font-weight:650}
+.code-header span{color:var(--muted);font-size:12px}
+pre{margin:0;background:var(--code);color:var(--codeink);padding:20px 18px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+p code{font-size:.88em}
+.install{padding:14px 18px;font-size:13px;color:var(--muted);margin:0}
+.install code{color:var(--ink)}
+.setup-note{font-size:13px;color:var(--muted);margin:18px 0 0;max-width:800px}
+.review{display:grid;gap:28px}
+.review p{color:var(--muted);max-width:420px}
+.review-panel{border:1px solid var(--rule);border-radius:8px;background:var(--panel);padding:22px}
+.review-bar{display:flex;justify-content:space-between;gap:12px;font-size:12px;border-bottom:1px solid var(--rule);padding-bottom:16px}
+.review-bar span{color:var(--muted)}
+.review-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
+.stats-descriptor{font-size:15px;margin-bottom:23px}
+.statuses{display:flex;flex-wrap:wrap;gap:7px}
+.statuses span{border:1px solid var(--rule);border-radius:4px;padding:3px 8px;font-size:12px}
+.statuses .selected{color:var(--accent);border-color:var(--accent)}
+.report-descriptor{margin:14px 0 0;font-size:14px;color:var(--muted)}
+.caption{font-size:12px!important;color:var(--muted);margin:14px 0 0;max-width:none!important}
+.early{display:grid;gap:14px}
+.early p{margin:0;color:var(--muted);max-width:680px}
+.early .eyebrow{margin:0}
+footer{padding-block:23px 30px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.footer-links{display:flex;gap:18px}
+
+@media(min-width:800px){main,header,footer{padding-inline:40px}
+.hero{grid-template-columns:1.4fr 1fr;align-items:center;padding-block:82px 46px;gap:50px}
+.setup{grid-template-columns:1fr 1fr}
+.review{grid-template-columns:1fr 1.3fr;align-items:center;gap:70px}
+section{padding-block:50px}
+.early{grid-template-columns:1fr 2fr}
+}
+@media(max-width:420px){main,header,footer{padding-inline:20px}
+nav a{padding-left:12px}
+h1{font-size:44px}
+.hero{padding-top:42px}
+.lead{font-size:17px}
+.code-header{padding:13px 14px}
+.code-header span{font-size:11px}
+pre{padding:16px 14px;font-size:11px}
+.problem{font-size:19px}
+.review-panel{padding:18px}
+}
+
+@media(prefers-color-scheme:dark){:root{--bg:#101b18;--ink:#e4ebe5;--muted:#a2b6ab;--rule:#30443a;--panel:#192822;--accent:#92d2ad;--code:#0b1511;--codeink:#dae9dd}
+.primary{color:#101b18}
+.primary:hover{color:#101b18}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+}
+
+</style>
+</head>
+<body>
+<header><a class="brand" href="#"><span aria-hidden="true">↳</span>feedwire</a><nav aria-label="Main"><a href="#setup">Setup</a><a href="https://github.com/Unselfisheologism/feedwire">GitHub ↗</a></nav></header>
+<main>
+<div class="hero">
+<div><p class="eyebrow">Open source · Early v1</p><h1>Your API has users.<br>Some are <span>agents.</span><br>Let them report back.</h1><p class="lead">Give AI agents a <code>/feedback</code> endpoint to report bugs, missing features and confusing errors.</p><div class="actions"><a class="button primary" href="#setup">Add a feedback loop ↓</a><a class="button" href="https://github.com/Unselfisheologism/feedwire">Read the source ↗</a></div></div>
+<figure class="loop" aria-label="Feedback flow: an agent using your API submits a structured report for human review"><div class="loop-top"><span>The missing return path</span><span>↵</span></div><div class="signal"><div class="node">AI agent</div><span class="arrow" aria-hidden="true">→</span><div class="node">Your API</div></div><p class="endpoint">POST /feedback</p><figcaption>A structured report, saved for a human to review. The agent tells you what went wrong. You decide what changes.</figcaption></figure>
+</div>
+<div class="problem"><p>An agent hits an error, works around it, or gives up.<br><span class="muted">Your logs may catch the failure. They don't tell you what the agent was trying to do. Feedwire gives it a place to say so.</span></p></div>
+<section id="setup" aria-labelledby="setup-title"><p class="eyebrow">A small addition to your backend</p><h2 id="setup-title">An endpoint, not another platform.</h2><p class="section-intro">Add the middleware to your existing app. Agents can discover it at <code>/.well-known/feedback.json</code> and read the schema at <code>/feedback/schema</code>.</p>
+<div class="setup">
+<article class="code-card"><div class="code-header"><h3>Express</h3><span>Node 22.5+</span></div><pre><code>const { feedback } = require('./node');
+app.use(feedback({
+  dbPath: 'feedback.db',
+  adminToken: process.env.FEEDBACK_ADMIN_TOKEN }));</code></pre><p class="install">Copy <code>node/</code> from the repo into your app.</p></article>
+<article class="code-card"><div class="code-header"><h3>FastAPI</h3><span>Python 3.9+</span></div><pre><code>import os
+from feedwire import create_feedback_router
+app.include_router(create_feedback_router(
+  db_path="feedback.db", admin_token=os.environ["FEEDBACK_ADMIN_TOKEN"]))</code></pre><p class="install">From the repo's <code>python/</code> folder: <code>pip install -e .</code></p></article>
+</div><p class="setup-note">These snippets assume an existing <code>app</code>. Set a long, random <code>FEEDBACK_ADMIN_TOKEN</code> in your server environment. SQLite stores the reports. Packages aren't on npm or PyPI yet. <a href="https://github.com/Unselfisheologism/feedwire#run-it">Full setup instructions ↗</a></p></section>
+<section class="review" aria-labelledby="review-title"><div><p class="eyebrow">Humans stay in the loop</p><h2 id="review-title">Read the reports.<br>Decide what matters.</h2><p>Open <code>/feedback/admin</code> with your admin token. See what agents struggle with, filter reports by status, and leave a review note.</p><p>No automatic fixes. No agent opening PRs on your behalf.</p></div><div><div class="review-panel"><div class="review-bar"><strong>Feedback review</strong><span>Admin token required</span></div><div class="review-label">At a glance</div><div class="stats-descriptor">Top endpoint + type pairs<br>Reports by type, severity, agent and day</div><div class="review-label">Review queue</div><div class="statuses"><span class="selected">new</span><span>triaged</span><span>accepted</span><span>rejected</span><span>done</span></div><p class="report-descriptor">Read the summary and request context.<br>Set a status. Add a note. Save.</p></div><p class="caption">An outline of the admin view, not live data or a screenshot.</p></div></section>
+<section class="early"><p class="eyebrow">Small on purpose</p><div><h2>Early, v1. Try it. Tell us what breaks.</h2><p>MIT licensed. Express middleware and a FastAPI router. Reports still need human review; v1 has no deduplication, alerts or user accounts. Read the repo's safety notes before putting it in production.</p></div></section>
+</main>
+<footer><span>Feedwire · A feedback loop for your API</span><div class="footer-links"><a href="https://github.com/Unselfisheologism/feedwire">GitHub</a><a href="https://feedwire.jeffrinjames99.workers.dev/feedback/schema">Live schema ↗</a></div></footer>
+</body>
+</html>
