@@ -7,7 +7,9 @@
     "index.js",
     "core.js",
     "dashboard.html",
-    "feedback.schema.json"
+    "feedback.schema.json",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=22.5"
@@ -18,5 +20,25 @@
   "license": "MIT",
   "devDependencies": {
     "express": "^4.21.2"
+  },
+  "homepage": "https://github.com/Unselfisheologism/feedwire#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Unselfisheologism/feedwire.git",
+    "directory": "node"
+  },
+  "bugs": {
+    "url": "https://github.com/Unselfisheologism/feedwire/issues"
+  },
+  "keywords": [
+    "feedback",
+    "ai",
+    "agents",
+    "express",
+    "api",
+    "middleware"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
