@@ -19,10 +19,11 @@ Idea origin: Brian Armstrong's post, "Every backend service should have a /feedb
 - No dedupe of similar reports, no email or Slack alerts, no per-agent API keys.
 - Rate limiting is in memory, per client IP, per process. Behind a proxy set `trustProxy` / `trust_proxy`, and use a real limiter at the edge for production.
 - Single admin token, no user accounts.
-- Registry releases are prepared but not published yet. Use the source install below until the first release succeeds.
 - Only tested with the test suites and a local run of both example servers. The dashboard was run in jsdom against a live server (stats and items render, an `<img onerror>` payload shows as plain text), but not opened in a real browser.
 
-## Package installs (after the first release)
+## Package installs
+
+Feedwire 0.1.0 is available on [npm](https://www.npmjs.com/package/feedwire) and [PyPI](https://pypi.org/project/feedwire/).
 
 ```sh
 npm install feedwire
@@ -35,7 +36,7 @@ FastAPI: `from feedwire import create_feedback_router`, then `app.include_router
 
 With no options, reports live in memory and the admin review API is off. Set a database path and admin token for persistent storage and review. See [RELEASING.md](RELEASING.md) for the phone-only publishing steps.
 
-## Run it
+## Run from source
 
 ### Express (Node 22.5 or newer)
 
