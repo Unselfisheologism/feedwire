@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://feedwire.pages.dev/sitemap.xml
